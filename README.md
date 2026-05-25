@@ -1,6 +1,6 @@
 # 🦎 Clasificador de Reptiles
 
-Clasificador de imágenes de reptiles entrenado con redes neuronales convolucionales. Distingue entre 10 clases de reptiles a partir de fotografías.
+Clasificador de imágenes de reptiles entrenado con... Distingue entre 10 clases de reptiles a partir de fotografías.
 
 ---
 
@@ -22,6 +22,8 @@ Clasificador de imágenes de reptiles entrenado con redes neuronales convolucion
 ---
 
 ## Dataset
+
+Raijin. (2022). Reptiles and Amphibians Image Dataset [https://www.kaggle.com/datasets/vencerlanz09/reptiles-and-amphibians-image-dataset]. Kaggle.
 
 - 6,045 imágenes en total distribuidas en 10 clases
 - El dataset está **desbalanceado**: desde 210 imágenes (Chameleon) hasta 1,862 (Turtle_Tortoise)
