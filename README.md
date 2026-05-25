@@ -21,26 +21,6 @@ Clasificador de imágenes de reptiles entrenado con redes neuronales convolucion
 
 ---
 
-## Estructura del proyecto
-
-```
-📁 Dataset/
-├── Chameleon/
-├── Crocodile_Alligator/
-├── Frog/
-├── Gecko/
-├── Iguana/
-├── Lizard/
-├── Salamander/
-├── Snake/
-├── Toad/
-└── Turtle_Tortoise/
-main.ipynb
-README.md
-```
-
----
-
 ## Dataset
 
 - 6,045 imágenes en total distribuidas en 10 clases
