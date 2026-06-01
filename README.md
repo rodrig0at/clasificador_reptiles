@@ -127,6 +127,11 @@ modelo.compile(
 | Loss | 1.28 | 2.00 | — |
 
 
+### Curvas de Entrenamiento
+![Curvas de entrenamiento](assets/curvas_entrenamiento.png)
+
+### Accuracy por Clase
+![Accuracy por clase](assets/accuracy_por_clase.png)
 
 ### Análisis de resultados
 
