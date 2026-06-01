@@ -119,29 +119,20 @@ modelo.compile(
 
 ## Resultados
 
-> ⚠️ *Los valores de accuracy y loss se agregarán al finalizar el entrenamiento.*
-
-### Métricas globales
+### Métricas globales (época 60)
 
 | Métrica | Train | Validación | Test |
 |---------|-------|------------|------|
-| Accuracy | — | — | — |
-| Loss | — | — | — |
+| Accuracy | 0.52 | 0.38 | **0.41** |
+| Loss | 1.28 | 2.00 | — |
 
-### Accuracy por clase (Test Set)
 
-| Clase | Accuracy |
-|-------|----------|
-| Chameleon | — |
-| Crocodile / Alligator | — |
-| Frog | — |
-| Gecko | — |
-| Iguana | — |
-| Lizard | — |
-| Salamander | — |
-| Snake | — |
-| Toad | — |
-| Turtle / Tortoise | — |
+
+### Análisis de resultados
+
+Las curvas de entrenamiento revelan un caso claro de **overfitting**. El accuracy de train sigue subiendo hasta 0.52 al final de las 60 épocas mientras que el de validación se estanca y oscila alrededor de 0.38 desde la época 30. La loss de train cae de forma continua hasta 1.28, pero la loss de validación deja de mejorar cerca de la época 20 y empieza a oscilar entre 1.8 y 2.1. Esta brecha creciente entre train y val indica que el modelo memorizó los datos de entrenamiento en lugar de generalizar.
+
+En cuanto al rendimiento por clase, **Salamander** (0.44), **Crocodile_Alligator** (0.52) y **Toad/Snake** (0.50) son las clases mejor clasificadas. Las más problemáticas son **Frog** (0.18), **Gecko** (0.20) y **Lizard** (0.22), probablemente por su similitud visual con otras clases (Iguana, Toad, Salamander respectivamente). Es interesante notar que **Chameleon**, a pesar de ser la clase con menos imágenes (21 en test), alcanza un recall de 0.48, lo que sugiere que `class_weight` cumplió su función en las clases minoritarias.
 
 ---
 
