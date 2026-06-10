@@ -331,7 +331,7 @@ pip install tensorflow scikit-learn pandas numpy matplotlib seaborn
 # Uso
 
 ```bash
-python index.py --image assets/imagen.jpg
+python index.py --image assets/gecko.jpg --model "ruta"/modelo_final_best.keras
 ```
 
 ---
