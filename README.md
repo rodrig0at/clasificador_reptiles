@@ -1,58 +1,61 @@
-# 🦎 Clasificador de Reptiles y Anfibios
+# 🦎 Clasificador de Reptiles y Anfibios (CNN + ResNet50)
 
-Clasificador de imágenes entrenado con una CNN personalizada inspirada en la arquitectura optimizada propuesta por Lv et al. (2022). Distingue entre **10 clases** de reptiles y anfibios a partir de fotografías.
+Sistema de clasificación de imágenes basado en **Deep Learning** que identifica automáticamente **10 clases de reptiles y anfibios** a partir de fotografías.
 
----
-
-## Clases
-
-| Índice | Clase |
-|--------|-------|
-| 0 | Chameleon |
-| 1 | Crocodile / Alligator |
-| 2 | Frog |
-| 3 | Gecko |
-| 4 | Iguana |
-| 5 | Lizard |
-| 6 | Salamander |
-| 7 | Snake |
-| 8 | Toad |
-| 9 | Turtle / Tortoise |
+El proyecto compara un modelo base basado en CNN con un modelo mejorado basado en **ResNet50**, incorporando técnicas modernas como **transfer learning**, **manejo del desbalance de clases** y **evaluación con múltiples métricas**.
 
 ---
 
-## Dataset
+# Clases
 
-Raijin. (2022). *Reptiles and Amphibians Image Dataset*. Kaggle.  
-https://www.kaggle.com/datasets/vencerlanz09/reptiles-and-amphibians-image-dataset
-
-- **6,045 imágenes** en total distribuidas en 10 clases
-- El dataset está **desbalanceado**: desde 210 imágenes (Chameleon) hasta 1,862 (Turtle_Tortoise)
-- El desbalance se maneja con `class_weight` durante el entrenamiento, para penalizar más los errores en clases pequeñas sin descartar ninguna imagen
-
-| Clase | Imágenes |
-|-------|----------|
-| Turtle_Tortoise | 1,862 |
-| Crocodile_Alligator | 692 |
-| Lizard | 500 |
-| Snake | 500 |
-| Frog | 499 |
-| Iguana | 499 |
-| Toad | 497 |
-| Salamander | 484 |
-| Gecko | 302 |
-| Chameleon | 210 |
+| Índice | Clase                 |
+| ------ | --------------------- |
+| 0      | Chameleon             |
+| 1      | Crocodile / Alligator |
+| 2      | Frog                  |
+| 3      | Gecko                 |
+| 4      | Iguana                |
+| 5      | Lizard                |
+| 6      | Salamander            |
+| 7      | Snake                 |
+| 8      | Toad                  |
+| 9      | Turtle / Tortoise     |
 
 ---
 
-### División del dataset (70 / 20 / 10)
+# Dataset
 
-Se hacen dos llamadas a `train_test_split` con `stratify` para garantizar que la proporción de cada clase se respete en los tres conjuntos.
+Raijin. (2022). *Reptiles and Amphibians Image Dataset*. Kaggle.
+
+* **6,045 imágenes**
+* **10 clases**
+* Dataset **desbalanceado**
+
+---
+
+## Distribución
+
+| Clase               | Imágenes |
+| ------------------- | -------- |
+| Turtle_Tortoise     | 1862     |
+| Crocodile_Alligator | 692      |
+| Lizard              | 500      |
+| Snake               | 500      |
+| Frog                | 499      |
+| Iguana              | 499      |
+| Toad                | 497      |
+| Salamander          | 484      |
+| Gecko               | 302      |
+| Chameleon           | 210      |
+
+---
+
+# División del Dataset (70 / 20 / 10)
+
+Se utilizó `train_test_split` con **stratify** para preservar la proporción de clases:
 
 ```python
-# Primera división: 70% train / 30% temp
 train_df, temp_df = train_test_split(df, test_size=0.3, stratify=df['clase'], random_state=42)
-# Segunda división: 20% val / 10% test
 val_df, test_df = train_test_split(temp_df, test_size=0.333, stratify=temp_df['clase'], random_state=42)
 ```
 
@@ -62,9 +65,24 @@ val_df, test_df = train_test_split(temp_df, test_size=0.333, stratify=temp_df['c
 | Validación | 1,209 | 20% |
 | Test | 605 | 10% |
 
+---
+
+# Preprocesamiento
+
+* Redimensionamiento: **224×224**
+* Normalización:
+
+```python
+rescale = 1./255
+```
+
+---
+
+# Data Augmentation
+
 ### Data Augmentation
 
-El augmentation se aplica **únicamente al conjunto de train**. Val y test solo reciben normalización (`rescale=1./255`).
+El augmentation se aplica **únicamente al conjunto de train**. Val y test solo reciben normalización (`rescale=1./255`)  tal como se sugiere en Lv et al. (2022).
 
 | Transformación | Valor |
 |----------------|-------|
@@ -76,26 +94,48 @@ El augmentation se aplica **únicamente al conjunto de train**. Val y test solo 
 
 ---
 
-## Modelo
+#  Manejo del Desbalance
 
-La arquitectura sigue el modelo optimizado descrito en Lv et al. (2022), cuya propuesta central consiste en una CNN mejorada sobre VggNet compuesta por **tres capas convolucionales con kernels decrecientes**, seguidas de **tres capas fully connected** y un clasificador **Softmax**. El paper demuestra que esta configuración supera a LeNet, AlexNet y VggNet estándar en accuracy de clasificación de imágenes.
+Se utilizó:
 
-La implementación en este proyecto adapta esa estructura a las características del dataset de reptiles:
-
+```python
+class_weight = compute_class_weight(...)
 ```
-Input (224 × 224 × 3)
-│
-├── Conv2D(32, 3×3, relu) → MaxPooling(2×2)
-├── Conv2D(64, 3×3, relu) → MaxPooling(2×2)
-├── Conv2D(128, 3×3, relu) → MaxPooling(2×2)
-│
-├── Flatten
-├── Dense(256, relu)
-├── Dense(128, relu)
-├── Dense(64, relu)
-│
-└── Dense(10, softmax)
+
+**Electronics (2023)**
+https://www.mdpi.com/2079-9292/12/21/4423
+
+Este trabajo demuestra que:
+
+* El desbalance afecta negativamente el desempeño del modelo
+* Las técnicas como `class_weight` mejoran el aprendizaje en clases minoritarias
+* Se evita sesgo hacia clases dominantes
+
+---
+
+# Modelo Base
+
+Arquitectura CNN inspirada en:
+
+Lv, Q., Zhang, S., & Wang, Y. (2022)
+
+```text
+Input (224×224×3)
+
+Conv2D(32) → MaxPool
+Conv2D(64) → MaxPool
+Conv2D(128) → MaxPool
+
+Flatten
+Dense(256)
+Dense(128)
+Dense(64)
+
+Softmax
 ```
+
+Consiste en una CNN mejorada sobre VggNet compuesta por **tres capas convolucionales con kernels decrecientes**, seguidas de **tres capas fully connected** y un clasificador **Softmax**. El paper demuestra que esta configuración supera a LeNet, AlexNet y VggNet estándar en accuracy de clasificación de imágenes.
+
 
 **Decisiones de diseño basadas en el paper:**
 
@@ -105,19 +145,9 @@ Input (224 × 224 × 3)
 - **Softmax en la salida:** Clasificador supervisado que produce probabilidades por clase (Lv et al., 2022, Sec. 3.1, Eq. 1).
 - **Data augmentation:** El paper señala que extender el dataset mediante aumentación mejora la capacidad de generalización del modelo (Sec. 4.1).
 
-**Compilación:**
-
-```python
-modelo.compile(
-    optimizer='adam',
-    loss='categorical_crossentropy',
-    metrics=['accuracy']
-)
-```
-
 ---
 
-## Resultados
+## Resultados Modelo Base
 
 ### Métricas globales (época 60)
 
@@ -133,7 +163,9 @@ modelo.compile(
 ### Accuracy por Clase
 ![Accuracy por clase](assets/accuracy_por_clase.png)
 
-### Análisis de resultados
+### Problema
+
+Se observa **overfitting**, consistente con lo reportado en modelos CNN poco profundos.
 
 Las curvas de entrenamiento revelan un caso claro de **overfitting**. El accuracy de train sigue subiendo hasta 0.52 al final de las 60 épocas mientras que el de validación se estanca y oscila alrededor de 0.38 desde la época 30. La loss de train cae de forma continua hasta 1.28, pero la loss de validación deja de mejorar cerca de la época 20 y empieza a oscilar entre 1.8 y 2.1. Esta brecha creciente entre train y val indica que el modelo memorizó los datos de entrenamiento en lugar de generalizar.
 
@@ -141,16 +173,119 @@ En cuanto al rendimiento por clase, **Salamander** (0.44), **Crocodile_Alligator
 
 ---
 
-## Obstáculos encontrados y soluciones
+# Modelo Mejorado: ResNet50
 
-**El dataset no estaba dividido en train/val/test**  
-Las imágenes estaban organizadas únicamente por clase, sin subcarpetas de train, val o test. Se resolvió recolectando las rutas con `os`, construyendo un DataFrame y usando `train_test_split` dos veces. Esto permitió usar `flow_from_dataframe` en lugar de `flow_from_directory`.
+Basado en:
 
-**El dataset estaba desbalanceado**  
-Al explorar el dataset con `Counter` se descubrió que las clases tenían entre 210 y 1,862 imágenes (diferencia de casi 9×). Reducir todas las clases a 210 imágenes habría limitado demasiado el entrenamiento. Se optó por `class_weight`, que penaliza más los errores en clases pequeñas sin descartar ninguna imagen.
+He, K., Zhang, X., Ren, S., & Sun, J. (2016)
+Deep Residual Learning for Image Recognition
 
-**Las imágenes estaban ordenadas por clase en el DataFrame**  
-Sin `stratify`, `train_test_split` habría cortado en medio de una clase. Se solucionó pasando `stratify=df['clase']` en ambas llamadas al split.
+https://ieeexplore.ieee.org/document/7780459
+
+---
+
+## Arquitectura
+
+```text
+ResNet50 (preentrenado en ImageNet)
+
+GlobalAveragePooling
+BatchNormalization
+Dense(128, relu)
+Dropout(0.4)
+
+Softmax
+```
+
+---
+
+## Configuración
+
+* Optimizer: Adam
+* Loss: categorical_crossentropy
+* Epochs: 30
+
+---
+
+# Métricas de Evaluación
+
+Se utilizaron múltiples métricas diferentes al paper, se creyó que no eran las más óptimas por lo que se decidió buscar las mejores:
+
+* Accuracy
+* Precision
+* Recall
+* F1-score
+
+---
+
+Basado en:
+
+**Scientific Reports (2024)**
+https://www.nature.com/articles/s41598-024-56706-x
+
+Este estudio establece que:
+
+* Accuracy es insuficiente en datasets desbalanceados
+* Precision y Recall permiten evaluar el rendimiento por clase
+* F1-score proporciona una medida balanceada
+
+---
+
+#  Resultados (ResNet50)
+
+## Métricas Globales
+
+| Métrica   | Valor      |
+| --------- | ---------- |
+| Accuracy  | **0.8512** |
+| Precision | **0.8524** |
+| Recall    | **0.8512** |
+| F1-score  | **0.8493** |
+
+---
+
+##  Promedios
+
+| Tipo         | Valor |
+| ------------ | ----- |
+| Macro avg    | 0.80  |
+| Weighted avg | 0.85  |
+
+---
+
+##  Desempeño por Clase
+
+El modelo obtiene mejor desempeño en clases visualmente distintivas (*Turtle_Tortoise*, *Crocodile_Alligator*), y menor desempeño en clases con alta similitud visual (*Gecko*, *Lizard*).
+
+---
+
+# Análisis
+
+El modelo mejora significativamente respecto al baseline:
+
+* **0.41 → 0.85 accuracy**
+
+Esto valida el uso de:
+
+* Transfer learning
+* Arquitecturas profundas
+* Métricas robustas
+
+---
+
+# Limitaciones
+
+* Similitud visual entre clases
+* Dataset desbalanceado
+* Sin fine-tuning completo
+
+---
+
+# Trabajo Futuro
+
+* Fine-tuning de ResNet
+* EfficientNet / Vision Transformers
+* Más datos
 
 ---
 
@@ -174,16 +309,39 @@ pip install tensorflow scikit-learn pandas numpy matplotlib seaborn
 
 ---
 
-## Uso
+# Uso
 
-1. Clona el repositorio y coloca el dataset en la ruta configurada en `data_dir`
-2. Abre `main.ipynb` en local o en Google Colab
-3. Ejecuta las celdas en orden
+```bash
+python index.py --image assets/imagen.jpg
+```
 
 ---
 
-## Referencias
+# Referencias
 
-Lv, Q., Zhang, S., & Wang, Y. (2022). Deep learning model of image classification using machine learning. *Advances in Multimedia*, *2022*, Article 3351256. https://doi.org/10.1155/2022/3351256
+[1] Lv, Q., Zhang, S., & Wang, Y. (2022).
+Deep learning model of image classification using machine learning.
+Advances in Multimedia, 2022.
+https://doi.org/10.1155/2022/3351256
 
-Raijin. (2022). *Reptiles and Amphibians Image Dataset*. Kaggle. https://www.kaggle.com/datasets/vencerlanz09/reptiles-and-amphibians-image-dataset
+[2] He, K., Zhang, X., Ren, S., & Sun, J. (2016).
+Deep Residual Learning for Image Recognition.
+CVPR.
+https://ieeexplore.ieee.org/document/7780459
+
+[3] Al-Masni, M. A. et al. (2023).
+Addressing Class Imbalance in Deep Learning.
+Electronics, 12(21), 4423.
+https://www.mdpi.com/2079-9292/12/21/4423
+
+[4] Chicco, D., & Jurman, G. (2024).
+Evaluation metrics for machine learning.
+Scientific Reports.
+https://www.nature.com/articles/s41598-024-56706-x
+
+[5] Raijin. (2022).
+Reptiles and Amphibians Dataset.
+Kaggle.
+https://www.kaggle.com/datasets/vencerlanz09/reptiles-and-amphibians-image-dataset
+
+---
