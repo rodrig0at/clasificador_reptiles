@@ -309,6 +309,8 @@ numpy
 matplotlib
 seaborn
 ```
+descargar los modelos de ser necesario estan disponibles en:
+https://drive.google.com/drive/folders/1D08Toq0WBpFxBiyhYc6gP-H4O-sa0tT6?usp=sharing
 
 Instalación:
 
