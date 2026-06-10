@@ -196,7 +196,16 @@ Dropout(0.4)
 
 Softmax
 ```
+El modelo mejorado se basa en ResNet50, una arquitectura profunda que introduce el concepto de bloques residuales (residual blocks). Estos bloques permiten que la red aprenda funciones residuales mediante conexiones directas (skip connections), resolviendo el problema de degradación que ocurre en redes profundas.
 
+**Decisiones de diseño basadas en el paper:**
+
+- **Uso de ResNet50 preentrenado (Transfer Learning):** Se utiliza un modelo entrenado en ImageNet para aprovechar features visuales generales aprendidos previamente, reduciendo la necesidad de grandes datasets.
+- **Congelamiento de capas convolucionales:** Se mantienen los pesos originales de ResNet para evitar sobreajuste, permitiendo que el modelo actúe como extractor de características..
+- **GlobalAveragePooling en lugar de Flatten:** Reduce el número de parámetros y evita overfitting, manteniendo información espacial relevante.
+- **Batch Normalization:** Estabiliza el entrenamiento y mejora la convergencia, reduciendo el problema de internal covariate shift.
+- **Capa Dense + Dropout:** Permite adaptar las features al problema específico mientras se reduce el overfitting.
+- **Softmax en la salida:** Produce probabilidades por clase para clasificación multiclase, consistente con el enfoque supervisado del paper.
 ---
 
 ## Configuración
