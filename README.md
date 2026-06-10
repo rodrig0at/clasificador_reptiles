@@ -242,6 +242,10 @@ Este estudio establece que:
 
 #  Resultados (ResNet50)
 
+### Curvas de Entrenamiento
+![Accuracy](assets/acc.png)
+![Loss](assets/loss.png)
+
 ## Métricas Globales
 
 | Métrica   | Valor      |
@@ -263,8 +267,12 @@ Este estudio establece que:
 ---
 
 ##  Desempeño por Clase
+![Accuracy por clase](assets/accxclass.png)
 
 El modelo obtiene mejor desempeño en clases visualmente distintivas (*Turtle_Tortoise*, *Crocodile_Alligator*), y menor desempeño en clases con alta similitud visual (*Gecko*, *Lizard*).
+
+##  Matriz de confusión
+![Matriz](assets/matrix.png)
 
 ---
 
@@ -272,7 +280,7 @@ El modelo obtiene mejor desempeño en clases visualmente distintivas (*Turtle_To
 
 El modelo mejora significativamente respecto al baseline:
 
-* **0.41 → 0.85 accuracy**
+* **0.41  ---- 0.85 accuracy**
 
 Esto valida el uso de:
 
